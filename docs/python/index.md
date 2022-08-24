@@ -314,8 +314,51 @@ def setup(bot):
 <Block type="success" title="前言">
 <div>本篇指南意帮助新手快速解决更新到discord.py 2.X的报错</div>
 
-详细完整迁移到discord.py 2.X的改动建议查看<a href="https://discordpy.readthedocs.io/en/latest/migrating.html">官方完整文档</a>
+> 目前未覆盖全部内容，详细完整迁移到discord.py 2.X的改动建议查看[官方完整文档](https://discordpy.readthedocs.io/en/latest/migrating.html). 
+> 阅读后无法解决请提交Issue.
 
-> 目前未覆盖全部内容，如果看不懂[官方完整文档](https://discordpy.readthedocs.io/en/latest/migrating.html)，请提交Issue.
+</Block>
+
+### Runtimewarning: coroutine 'bot.load_extension' was never awaited
+<Block type="danger" title="問題">
+<div>执行后在 bot.load_extension 报错, <ErrorMsg text="Runtimewarning: coroutine 'Bot.load_extension' was never awaited" /></div>
+
+出錯程式：
+```py
+#你的需要加载的cog
+class cog(commands.Cog):
+    ...略
+
+def setup(bot):
+    bot.add_cog(cog(bot))
+
+#加载cog的函数
+def loader():
+    ...略
+    bot.load_extension(f'cog')
+```
+
+</Block>
+
+<Block type="success" title="解決方法">
+
+```py
+#你的需要加载的cog
+class cog(commands.Cog):
+    ...略
+
+async def setup(bot):
+    await bot.add_cog(cog(bot))
+
+#加载cog的函数(使用setup_hook,其他方法请参照官方文档或者在on_ready时加载)
+class bot(commands.Cog):
+    async def setup_hook(self):
+        await loader()
+
+
+    async def loader(self):
+        ...略
+        await bot.load_extension(f'cog')
+```
 
 </Block>
