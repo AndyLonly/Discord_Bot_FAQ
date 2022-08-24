@@ -35,7 +35,7 @@ jobs:
 
       - name: vitepress-deploy
         uses: peaceiris/actions-gh-pages@v3
-        env:
+        with:
           personal_token: ${{ secrets.ACCESS_TOKEN }}
           publish_branch: gh-pages
           publish_dir: docs/.vitepress/dist
