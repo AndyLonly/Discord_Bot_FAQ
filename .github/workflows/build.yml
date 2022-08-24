@@ -29,7 +29,9 @@ jobs:
           node-version: 16
         
       - name: Build
-        run: yarn install && build
+        run: |
+             yarn install 
+             yarn run build
 
       - name: vitepress-deploy
         uses: peaceiris/actions-gh-pages@v3
