@@ -376,7 +376,8 @@ bot = commands.Bot(command_prefix='?')
 <Block type="success" title="解決方法">
 
 ```py
-bot = commands.Bot(command_prefix='?', intents=discord.Intents.all())#你也可以只开启你需要的Intents，具体方法请自行查看文档
+bot = commands.Bot(command_prefix='?', intents=discord.Intents.all())
+#你也可以只开启你需要的Intents，具体方法请自行查看文档
 ```
 
 前往discord的[开发者页面](https://discord.com/developers/applications)
