@@ -313,6 +313,9 @@ def setup(bot):
 ## 从旧的discord.py1.X更新至discord.py 2.X
 <Block type="success" title="前言">
 <div>本篇指南意帮助新手快速解决更新到discord.py 2.X的报错</div>
-详细完整迁移到discord.py 2.X的改动建议查看[官方完整文档](https://discordpy.readthedocs.io/en/latest/migrating.html)
+
+详细完整迁移到discord.py 2.X的改动建议查看<a href="https://discordpy.readthedocs.io/en/latest/migrating.html">官方完整文档</a>
+
 > 目前未覆盖全部内容，如果看不懂[官方完整文档](https://discordpy.readthedocs.io/en/latest/migrating.html)，请提交Issue.
+
 </Block>
