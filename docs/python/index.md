@@ -362,3 +362,27 @@ class bot(commands.Cog):
 ```
 
 </Block>
+
+### bot.__init__() missing 1 required keyword-only argument: 'intents'|bot对事件无反应
+<Block type="danger" title="問題">
+<div>执行后在 commands.Bot(command_prefix='?') 报错, <ErrorMsg text="TypeError: bot.__init__() missing 1 required keyword-only argument: 'intents'" />或者bot对事件无反应</div>
+
+```py
+bot = commands.Bot(command_prefix='?')
+```
+
+</Block>
+
+<Block type="success" title="解決方法">
+
+```py
+bot = commands.Bot(command_prefix='?', intents=discord.Intents.all())#你也可以只开启你需要的Intents，具体方法请自行查看文档
+```
+
+前往discord的[开发者页面](https://discord.com/developers/applications)
+
+选择你的应用，并且在Bot分页里将需要的Intents开启
+
+![img](/imgs/python/migrating-2.0/intents.png)
+
+</Block>
