@@ -310,38 +310,49 @@ def setup(bot):
 
 </Block>
 
-## 从旧的discord.py1.X更新至discord.py 2.X
+
+## 从旧的dpy 1.X更新至dpy 2.X
 <Block type="success" title="前言">
 <div>本篇指南意帮助新手快速解决更新到discord.py 2.X的报错</div>
 
-> 目前未覆盖全部内容，详细完整迁移到discord.py 2.X的改动建议查看[官方完整文档](https://discordpy.readthedocs.io/en/latest/migrating.html). 
+> 目前未覆盖全部内容，详细完整迁移到dpy 2.X的改动建议查看[官方完整文档](https://discordpy.readthedocs.io/en/latest/migrating.html). 
 > 阅读后无法解决请提交Issue.
 
 </Block>
 
 ### Runtimewarning: coroutine 'bot.load_extension' was never awaited
 <Block type="danger" title="問題">
-<div>执行后在 bot.load_extension 报错, <ErrorMsg text="Runtimewarning: coroutine 'Bot.load_extension' was never awaited" /></div>
+<div>执行后在 bot.load_extension 报错 
+<br><ErrorMsg text="Runtimewarning: coroutine 'Bot.load_extension' was never awaited" /></div>
 
 出錯程式：
+
+---
+需要加载的Cog
 ```py
-#你的需要加载的cog
 class cog(commands.Cog):
     ...略
 
 def setup(bot):
     bot.add_cog(cog(bot))
-
-#加载cog的函数
-def loader():
-    ...略
-    bot.load_extension(f'cog')
+	
+def teardown(bot):
+	...略
 ```
-
+加载cog的函数
+```py
+bot.load_extension(f'cog')
+```
+---
 </Block>
 
 <Block type="success" title="解決方法">
+目前dpy2.0重写了bot启动方式并且将load_extension/unload_extension/reload_extension改为异步方式
 
+修正程式：
+
+---
+需要加载的Cog
 ```py
 #你的需要加载的cog
 class cog(commands.Cog):
@@ -349,41 +360,109 @@ class cog(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(cog(bot))
-
-#加载cog的函数(使用setup_hook,其他方法请参照官方文档或者在on_ready时加载)
-class bot(commands.Cog):
+	
+async def teardown(bot):
+	...略
+```
+加载cog的函数(使用setup_hook)
+```py
+class core(commands.Bot):
     async def setup_hook(self):
-        await loader()
-
-
-    async def loader(self):
-        ...略
+        await self.load_extension(f'cog')
+```
+加载cog的函数(使用on_ready)
+```py	
+class core(commands.Cog):
+	@commands.Cog.listener()
+    async def on_ready(self):
+        await self.bot.load_extension(f'cog')
+```	
+不使用类(使用setup_hook)
+```py
+bot.setup_hook = setup_hook
+async def setup_hook():
+	await bot.load_extension(f'cog')
+```
+不使用类(使用async_with)
+```py
+async def main():
+    async with bot:
         await bot.load_extension(f'cog')
+        await bot.start(TOKEN)
+
+asyncio.run(main())
 ```
 
 </Block>
 
-### bot.__init__() missing 1 required keyword-only argument: 'intents'|bot对事件无反应
+### xxxx missing 1 required keyword-only argument: 'intents' 或者对事件无反应
 <Block type="danger" title="問題">
-<div>执行后在 commands.Bot(command_prefix='?') 报错, <ErrorMsg text="TypeError: bot.__init__() missing 1 required keyword-only argument: 'intents'" />或者bot对事件无反应</div>
+<div>执行后在 commands.Bot(command_prefix='?') 报错, <ErrorMsg text="TypeError: xxxx missing 1 required keyword-only argument: 'intents'" />或者bot对事件无反应</div>
 
+出錯程式：
+
+---
 ```py
 bot = commands.Bot(command_prefix='?')
 ```
-
+---
 </Block>
 
 <Block type="success" title="解決方法">
+Discord目前要求使用Intents以控制Bot所能接收的网关事件
 
+修正程式：
+
+---
 ```py
 bot = commands.Bot(command_prefix='?', intents=discord.Intents.all())
 #你也可以只开启你需要的Intents，具体方法请自行查看文档
 ```
-
+---
 前往discord的[开发者页面](https://discord.com/developers/applications)
 
 选择你的应用，并且在Bot分页里将需要的Intents开启
 
 ![img](/imgs/python/migrating-2.0/intents.png)
+
+</Block>
+
+
+### Webhook报错module 'discord' has no attribute xxxx
+<Block type="danger" title="問題">
+<div>执行Webhook后报错, <ErrorMsg text="module 'discord' has no attribute 'AsyncWebhookAdapter'" />或者<ErrorMsg text="module 'discord' has no attribute 'RequestsWebhookAdapter'" /></div>
+
+出錯程式：
+
+---
+```py
+async with aiohttp.ClientSession() as session:
+    webhook = discord.Webhook.from_url('url-here', 
+		adapter=discord.AsyncWebhookAdapter(session))
+    await webhook.send('Hello World', username='Foo')
+	
+webhook = discord.Webhook.partial(123456, 'token-here', 
+	adapter=discord.RequestsWebhookAdapter())
+webhook.send('Hello World', username='Foo')
+```
+---
+</Block>
+
+<Block type="success" title="解決方法">
+WebhookAdapter类被移除,请使用新的写法
+
+修正程式：
+
+---
+```py
+# after
+async with aiohttp.ClientSession() as session:
+    webhook = discord.Webhook.from_url('url-here', session=session)
+    await webhook.send('Hello World', username='Foo')
+	
+webhook = discord.SyncWebhook.partial(123456, 'token-here')
+webhook.send('Hello World', username='Foo')
+```
+---
 
 </Block>
