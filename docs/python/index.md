@@ -315,7 +315,9 @@ def setup(bot):
 <div>报错<ErrorMsg text="discord.errors.HTTPException: 429 Too Many Requests " /></div>
 
 报错：
+
 ---
+
 ```py
 Traceback (most recent call last):
   File "main.py", line 224, in <module>
@@ -343,7 +345,9 @@ discord.errors.HTTPException: 429 Too Many Requests (error code: 0):
 如果持续触发速率限制请做出以下调整
 
 1. 检查自身程序
+
 	---
+	
 	```py
 	bot = commands.Bot(enable_debug_events=True)
 
@@ -357,7 +361,9 @@ discord.errors.HTTPException: 429 Too Many Requests (error code: 0):
 	async def on_socket_raw_send(payload):
 		print(payload)
 	```
+	
 	---
+	
 	检查Bot是否大量持续产生速率限制错误或者持续发送网关事件
 	
 	- 如果是:
